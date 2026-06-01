@@ -32,7 +32,7 @@ public class ImdbSearch {
 		}
 	}
 
-	protected static ConnectionConfig getConnectionConfig() throws IOException {
+	public static ConnectionConfig getConnectionConfig() throws IOException {
 		Properties props = new Properties();
 
 		//load a properties file from class path, inside static method
@@ -48,7 +48,7 @@ public class ImdbSearch {
 
 	}
 
-	protected static Connection openConnection() throws SQLException, IOException {
+	public static Connection openConnection() throws SQLException, IOException {
 
 		ConnectionConfig cc = getConnectionConfig();
 		return DriverManager.getConnection("jdbc:postgresql://" + cc.getHost() + ":"

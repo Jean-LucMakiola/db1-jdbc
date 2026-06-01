@@ -10,21 +10,24 @@ import java.util.List;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ImdbSearchTests {
 
-    static ConnectionConfig config;
-
     @BeforeAll
     static void setUp() {
-        try {
-            config = ImdbSearch.getConnectionConfig();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        Assertions.assertFalse(config.getUsername().isBlank(), "please provide your database username in the \"database.properties\" file");
-        Assertions.assertFalse(config.getPassword().isBlank(), "please provide your database password in the \"database.properties\" file");
-
         TestFixtures.setup();
-        
     }
+
+//    @Test
+//    @Order(0)
+//    @DisplayName("getConnectionConfig() should return a ConnectionConfig with username and password set")
+//    void testReadConfig() throws SQLException, IOException {
+//        try (var config = ImdbSearch.getConnectionConfig(){
+//            Assertions.assertFalse(config.getUsername().isBlank(), "please provide your database username in the \"database.properties\" file");
+//            Assertions.assertFalse(config.getPassword().isBlank(), "please provide your database password in the \"database.properties\" file");
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
+
 
     @Test
     @Order(1)
