@@ -13,7 +13,7 @@ import java.util.Properties;
 
 public class ImdbSearch {
 
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) {
 		try (Connection connection = openConnection()) {
 
 			String output = "";
@@ -57,8 +57,8 @@ public class ImdbSearch {
 	public static Connection openConnection() throws SQLException, IOException {
 
 		ConnectionConfig cc = getConnectionConfig();
-		return DriverManager.getConnection("jdbc:postgresql://" + cc.getHost() + ":"
-				+ cc.getPort() +"/" + cc.getDatabase(), cc.getUsername(), cc.getPassword());
+		return DriverManager.getConnection("jdbc:postgresql://" + cc.host() + ":"
+				+ cc.port() +"/" + cc.database(), cc.username(), cc.password());
 	}
 
 	private static String selectFirstMovies(Connection connection, int limit)
