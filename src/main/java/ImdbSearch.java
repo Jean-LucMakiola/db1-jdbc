@@ -2,16 +2,16 @@ import entities.Actor;
 import entities.Movie;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
 public class ImdbSearch {
-
-	private static String  keyword;
 
 	public static void main(String[] args) throws SQLException {
 		try (Connection connection = openConnection()) {
@@ -36,7 +36,13 @@ public class ImdbSearch {
 		Properties props = new Properties();
 
 		//load a properties file from class path, inside static method
-		props.load(ImdbSearch.class.getClassLoader().getResourceAsStream("database.properties"));
+		try (InputStream in = ImdbSearch.class.getClassLoader()
+				.getResourceAsStream("database.properties")) {
+			if (in == null) {
+				throw new IOException("database.properties not found on classpath");
+			}
+			props.load(in);
+		}
 
 		String host = props.getProperty("host");
 		String port = props.getProperty("port");
@@ -44,7 +50,7 @@ public class ImdbSearch {
 		String username = props.getProperty("username");
 		String password = props.getProperty("password");
 
-		return new ConnectionConfig(username, password, host, Integer.valueOf(port), database);
+		return new ConnectionConfig(username, password, host, Integer.parseInt(port), database);
 
 	}
 
@@ -57,21 +63,23 @@ public class ImdbSearch {
 
 	private static String selectFirstMovies(Connection connection, int limit)
 			throws SQLException {
-		String output = "First " + limit + " MOVIES\n";
-		// execute statement for movies with keyword in title
-		ResultSet movies = connection.createStatement().executeQuery(
-				"SELECT * FROM tmovies ORDER BY startyear ASC LIMIT " + limit);
+		StringBuilder output = new StringBuilder("First " + limit + " MOVIES\n");
+		// fetch the earliest movies by start year
+		try (Statement stmt = connection.createStatement();
+				ResultSet movies = stmt.executeQuery(
+						"SELECT * FROM tmovies ORDER BY startyear ASC LIMIT " + limit)) {
 
-		while (movies.next()) {
-			// build output string
-			output += movies.getString("tconst") + ", "
-					+ movies.getString("primarytitle") + ", "
-					+ movies.getString("isadult") + ", "
-					+ movies.getString("startyear") + ", "
-					+ movies.getString("runtimeminutes") + ", "
-					+ movies.getString("genres") + "\n";
+			while (movies.next()) {
+				// build output string
+				output.append(movies.getString("tconst")).append(", ")
+						.append(movies.getString("primarytitle")).append(", ")
+						.append(movies.getString("isadult")).append(", ")
+						.append(movies.getString("startyear")).append(", ")
+						.append(movies.getString("runtimeminutes")).append(", ")
+						.append(movies.getString("genres")).append("\n");
+			}
 		}
-		return output;
+		return output.toString();
 	}
 
 	protected static List<Movie> findMovies(Connection connection, String keyword)
