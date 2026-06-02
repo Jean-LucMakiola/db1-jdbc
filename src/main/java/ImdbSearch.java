@@ -67,7 +67,7 @@ public class ImdbSearch {
 		// fetch the earliest movies by start year
 		try (Statement stmt = connection.createStatement();
 				ResultSet movies = stmt.executeQuery(
-						"SELECT * FROM tmovies ORDER BY startyear ASC LIMIT " + limit)) {
+						"SELECT * FROM tmovies ORDER BY \"startYear\" ASC LIMIT " + limit)) {
 
 			while (movies.next()) {
 				// build output string
